@@ -1,23 +1,27 @@
 import React, { Component } from 'react';
 import Button from './components/Button';
 import Table from './components/Table';
+import Footer from './components/Footer';
 
 class App extends Component {
   constructor(props){
     super(props);
     this.state = {
       table : {
-        height: 10,
-        width: 20,
-        people: []
+        height: 20,
+        width: 30,
+        people: [
+          []
+        ]
       },
       generation: 0,
-      isSimulate: false
+      isSimulate: false,
+      speed : 200
     }
   }
 
   componentDidMount(){
-    this.setInitialState(50, 30);
+    this.setInitialState(30, 20);
   }
 
   handleSetTableSize(size){
@@ -34,15 +38,14 @@ class App extends Component {
     // set up an empty array for the population
     table.people = [];
     // initialize the profile of a new people
-    let people = {
-      isAlive: true
-    }
+    let people;
     // generate the table
     for (let i = 0; i < height; i++){
       //generate rows
       let row = [];
       for (let j = 0; j < width; j++){
         people = {
+          id: 'r'+i+'-c'+j,
           isAlive: Math.round(Math.random()) === 1 ? true : false
         }
         row.push(people);
@@ -70,6 +73,7 @@ class App extends Component {
       newRow = oneRow.map( (ppl, cid) => {
 
         return ppl = {
+          id: 'r'+rid+'-c'+cid,
           isAlive: this.willHeAlive(rid, cid)
         }
       });
@@ -82,6 +86,7 @@ class App extends Component {
       generation: this.state.generation + 1
     })
   }
+
 
   willHeAlive(x, y){
     // nStat = neightbourStatus
@@ -105,7 +110,7 @@ class App extends Component {
           The for loop will check from -1 to +1 the rows, and the IF will skip the unexisting elements
         */
         for (let j = -1; j < 2; j++)
-          if (table[x+i][y+j] !== undefined && table[x+i][y+j].isAlive === true && !(i == 0 && j == 0))
+          if (table[x+i][y+j] !== undefined && table[x+i][y+j].isAlive === true && !(i === 0 && j === 0))
             /*
               Like the previous case, this FOR and IF do the same, but we check the "alive" status of the neighbours
             */
@@ -131,7 +136,8 @@ class App extends Component {
   }
 
   handleStart(){
-    this.intervalId = setInterval(this.setNewGeneration.bind(this), 100);
+    let speed = this.state.speed;
+    this.intervalId = setInterval(this.setNewGeneration.bind(this), speed);
     this.setState({
       isSimulate: true
     });
@@ -141,6 +147,65 @@ class App extends Component {
     clearInterval(this.intervalId);
     this.setState({
       isSimulate: false
+    })
+  }
+
+  handleSetSpeed(speed){
+    this.setState({
+      speed: speed
+    }, () => {
+      if (this.state.isSimulate === true){
+        clearInterval(this.intervalId);
+        this.intervalId = setInterval(this.setNewGeneration.bind(this), this.state.speed);
+      }
+    });
+  }
+
+  manipulatePeople(what){
+    /*
+    This method will grab the clicked 'poeple\'s' id number, unwrap the coordinates from it
+    change the isAlive status of it, and updates the table.
+    */
+    let coords = what.split('-');
+    let x = coords[0].slice(1);
+    let y = coords[1].slice(1);
+    let table = this.state.table;
+    table.people[x][y].isAlive = !table.people[x][y].isAlive;
+    this.setState({
+      table: table
+    });
+  }
+
+  clearTable(){
+    // stop auto generation
+    clearInterval(this.intervalId);
+    let table = this.state.table;
+    let population = table.people;
+    let newPopulation; // this will be the new table
+    let newRow;
+
+    // rid = row index
+    // cid = col index
+    /*
+      Map throug the people array, and set all people dead
+    */
+    newPopulation = population.map( (oneRow, rid) => {
+      newRow = oneRow.map( (ppl, cid) => {
+
+        return ppl = {
+          id: 'r'+rid+'-c'+cid,
+          isAlive: false
+        }
+      });
+      return newRow;
+    });
+    table.people = newPopulation;
+
+    this.setState({
+      table: table,
+      generation: 0,
+      isSimulate: false,
+      speed: this.state.speed
     })
   }
 
@@ -154,16 +219,46 @@ class App extends Component {
     }
     return (
       <div className="App">
-        <h1>Game Of Life</h1>
+        <header>
+          <h1 className="center">Game Of Life</h1>
+          <h6 className="center">A mathematical simulation based on the theory of <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life" target="_blank" rel="noopener noreferrer"> John Conway</a></h6>
+        </header>
 
-        <Button label="50x30" onClick={this.handleSetTableSize.bind(this)}/>
-        <Button label="70x50" onClick={this.handleSetTableSize.bind(this)}/>
-        <Button label="100x80" onClick={this.handleSetTableSize.bind(this)}/>
+        <Table table={this.state.table} onClick={this.manipulatePeople.bind(this)}/>
 
-        {controlButton}
-
-        <p>Generation: {this.state.generation}</p>
-        <Table table={this.state.table}/>
+        <div className="control-box">
+          <div className="control-section">
+            <div className="control-title">
+              <h4>Control:</h4>
+            </div>
+            <div className="control-buttons">
+              {controlButton}
+              <Button label="clear" onClick={this.clearTable.bind(this)}/>
+              <button className="generation">Generation: {this.state.generation}</button>
+            </div>
+          </div>
+          <div className="control-section">
+            <div className="control-title">
+              <h4>Set table size:</h4>
+            </div>
+            <div className="control-buttons">
+              <Button className={this.state.table.height === 20 ? 'generation' : ''} label="30x20" onClick={this.handleSetTableSize.bind(this)}/>
+              <Button className={this.state.table.height === 30 ? 'generation' : ''} label="45x30" onClick={this.handleSetTableSize.bind(this)}/>
+              <Button className={this.state.table.height === 40 ? 'generation' : ''} label="60x40" onClick={this.handleSetTableSize.bind(this)}/>
+            </div>
+          </div>
+          <div className="control-section">
+            <div className="control-title">
+              <h4>Set simulation speed: </h4>
+            </div>
+            <div className="control-buttons">
+              <Button className={this.state.speed === 800 ? 'generation' : ''} label="slow" onClick={this.handleSetSpeed.bind(this, 800)}/>
+              <Button className={this.state.speed === 400 ? 'generation' : ''} label="normal" onClick={this.handleSetSpeed.bind(this, 400)}/>
+              <Button className={this.state.speed === 200 ? 'generation' : ''} label="fast" onClick={this.handleSetSpeed.bind(this, 200)}/>
+            </div>
+          </div>
+        </div>
+        <Footer/>
       </div>
     );
   }

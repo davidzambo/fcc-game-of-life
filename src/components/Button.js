@@ -9,7 +9,7 @@ class App extends Component {
 
   render() {
     return (
-      <button onClick={this.handleOnClick.bind(this)}>{this.props.label}</button>
+      <button className={this.props.className} onClick={this.handleOnClick.bind(this)}>{this.props.label}</button>
     );
   }
 }

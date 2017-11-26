@@ -1,0 +1,12 @@
+footer{
+  position: absolute;
+  font-size: 2rem;
+  background-color: $elegant-dark;
+  bottom: 50%;
+  right: -3.5rem;
+  transform: rotate(-90deg);
+  img{
+    height: 2rem;
+    vertical-align:middle;
+  }
+}

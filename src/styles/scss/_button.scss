@@ -1,0 +1,18 @@
+button{
+  color: $white;
+  background-color: $info-dark;
+  border: 2px outset $info;
+  padding: 0.25rem 1.5rem;
+  width: 100%;
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 0.2rem;
+  transition: all 1s;
+  &:hover, .active{
+    cursor: pointer;
+    background-color: $info;
+    border: 2px inset $info;
+    transition: all 1s;
+
+  }
+}

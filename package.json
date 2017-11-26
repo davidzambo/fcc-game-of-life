@@ -1,8 +1,25 @@
 {
   "name": "game-of-life",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "This is a FreeCodeCamp project in the Data Visualisation section",
+  "private": false,
+  "homepage" : "https://www.dcmf.hu/freecodecamp/game-of-life",
+  "author": "David Zambo",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://www.github.com/davidzambo/fcc-markdown-preview.git"
+  },
+  "keywords": [
+    "Game",
+    "Life",
+    "Freecodecamp",
+    "React",
+    "Sass",
+    "DCMF"
+  ],
   "dependencies": {
+    "font-awesome": "github:FortAwesome/Font-Awesome",
     "node-sass": "^4.7.2",
     "node-sass-chokidar": "0.0.3",
     "npm-run-all": "^4.1.2",
